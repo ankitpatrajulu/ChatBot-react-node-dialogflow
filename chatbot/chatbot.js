@@ -8,7 +8,7 @@ const structjson = require('./structjson')
 const projectID = config.googleProjectID
 
 const credentials = {
-    client_mail: config.googleClientEmail,
+    client_email: config.googleClientEmail,
     private_key: config.googlePrivateKey
 }
 
