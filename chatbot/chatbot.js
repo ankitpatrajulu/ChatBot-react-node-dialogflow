@@ -18,10 +18,11 @@ const sessionsClient = new dialogFlow.SessionsClient({
 })
 
 // Define Session path
-const sessionPath = sessionsClient.sessionPath(config.googleProjectID, config.dialogFlowSessionID)
+
 
 module.exports = {
-    textQuery : async function(text, parameters = {}) {
+    textQuery : async function(text, userID,  parameters = {}) {
+        let sessionPath = sessionsClient.sessionPath(config.googleProjectID, config.dialogFlowSessionID + userID)
         let self = module.exports
         const request = {
             session: sessionPath,
@@ -48,7 +49,8 @@ module.exports = {
 
         return responses
     },
-    eventQuery : async function(event, parameters = {}) {
+    eventQuery : async function(event, userID, parameters = {}) {
+        let sessionPath = sessionsClient.sessionPath(config.googleProjectID, config.dialogFlowSessionID + userID)
         let self = module.exports
         const request = {
             session: sessionPath,
