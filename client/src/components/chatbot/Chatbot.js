@@ -5,6 +5,7 @@ import { v4 as uuid } from 'uuid';
 
 import Message from './Message';
 import Card from './Card';
+import QuickReplies from './QuickReplies';
 
 const cookies = new Cookies();
 
@@ -16,6 +17,7 @@ class Chatbot extends Component {
         super(props);
         // This binding is necessary to make this work in the callback
         this._handleInputKeyPress = this._handleInputKeyPress.bind(this)
+        this._handleQuickReplyPayload = this._handleQuickReplyPayload(this)
         this.state = {
             messages: []
         }
@@ -37,30 +39,59 @@ class Chatbot extends Component {
 
         this.setState({messages: [...this.state.messages, says]})
 
-        const res = await axios.post('/api/df_text_query', {text : text, userID: cookies.get('userID')})
+        try {
+            const res = await axios.post('/api/df_text_query', {text : text, userID: cookies.get('userID')})
 
-        for (let msg of res.data.fulfillmentMessages) {
-            console.log(JSON.stringify(msg))
+            for (let msg of res.data.fulfillmentMessages) {
+                says = {
+                    speaks: 'bot',
+                    msg
+                }
+                this.setState({messages: [...this.state.messages, says]})
+            }
+        } catch (e) {
             says = {
                 speaks: 'bot',
-                msg
+                msg: {
+                    text: {
+                        text: "I'm having trouble. I need to terminate. I will be back later!"
+                    }
+                }
             }
             this.setState({messages: [...this.state.messages, says]})
         }
+        
 
     }
 
     async df_event_query(event) {
+        try {
+            const res = await axios.post('/api/df_event_query', {event : event, userID: cookies.get('userID')})
 
-        const res = await axios.post('/api/df_event_query', {event : event, userID: cookies.get('userID')})
-
-        for(let msg of res.data.fulfillmentMessages) {
+            for(let msg of res.data.fulfillmentMessages) {
+                let says = {
+                    speaks: 'me',
+                    msg
+                }
+                this.setState({messages: [...this.state.messages, says]})
+            }
+        }catch (e) {
             let says = {
-                speaks: 'me',
-                msg
+                speaks: 'bot',
+                msg: {
+                    text: {
+                        text: "I'm having trouble. I need to terminate. I will be back later!"
+                    }
+                }
             }
             this.setState({messages: [...this.state.messages, says]})
         }
+        
+            // let that = this;
+            // setTimeout(function(){
+            //     that.setState({showBot : false})
+            // }, 2000)
+        
     }
 
     componentDidMount() {
@@ -70,6 +101,13 @@ class Chatbot extends Component {
     componentDidUpdate() {
         this.messeagesEnd.scrollIntoView({ behavior: "smooth"})
         this.takeInput.focus()
+    }
+
+    _handleQuickReplyPayload(event, payload, text) {
+        event.preventDefault()
+        event.stopPropagation()
+
+        this.df_text_query(text)
     }
 
     renderCards(cards) {
@@ -95,6 +133,17 @@ class Chatbot extends Component {
                     </div>
                 </div>
             </div>
+        }  else if (message.msg &&
+            message.msg.payload &&
+            message.msg.payload.fields &&
+            message.msg.payload.fields.quick_replies
+        ) {
+            return <QuickReplies
+                text={message.msg.payload.fields.text ? message.msg.payload.fields.text : null}
+                key={i}
+                replyClick={this._handleQuickReplyPayload}
+                speaks={message.speaks}
+                payload={message.msg.payload.fields.quick_replies.listValue.values}/>;
         }
     }
 
@@ -116,14 +165,21 @@ class Chatbot extends Component {
     render() {
         return (
             <div style={chatbotHead}>
+                <nav>
+                    <div className="nav-wrapper">
+                        <a className="brand-logo" href="/">ChatBot</a>
+                    </div>
+                </nav>
                 <div id="chatbot" style={chatbotMain}>
-                    <h2>ChatBot</h2>
                     {this.renderMessages(this.state.messages)}
                     <div ref={(el) => { this.messeagesEnd = el }}
                         style={{float: 'left', clear: "both"}}>
                     </div>
-                    <input type="text" onKeyPress={this._handleInputKeyPress} 
-                    ref={(c) => {this.takeInput = c}}/>
+                </div>
+                <div className="col s12">
+                    <input style={{margib: 0, paddingLeft: '1%', paddingRight: '1%', width: '98%'}} placeholder="type your message" type="text" onKeyPress={this._handleInputKeyPress} 
+                        ref={(c) => {this.takeInput = c}}
+                        autoFocus={true}/>
                 </div>
             </div>
         )
@@ -131,13 +187,16 @@ class Chatbot extends Component {
 }
 
 const chatbotHead = {
-    height: 400,
+    height: 600,
     width: 400,
-    float: 'right'
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    border: '1px solid lightgrey'
 }
 
 const chatbotMain = {
-    height: '100%',
+    height: 388,
     width: '100%',
     overflow: 'auto'
 }
