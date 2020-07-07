@@ -17,7 +17,7 @@ class Chatbot extends Component {
         super(props);
         // This binding is necessary to make this work in the callback
         this._handleInputKeyPress = this._handleInputKeyPress.bind(this)
-        this._handleQuickReplyPayload = this._handleQuickReplyPayload(this)
+        this._handleQuickReplyPayload = this._handleQuickReplyPayload.bind(this)
         this.state = {
             messages: []
         }
@@ -192,11 +192,12 @@ const chatbotHead = {
     position: 'absolute',
     bottom: 0,
     right: 0,
-    border: '1px solid lightgrey'
+    border: '1px solid lightgrey',
+    paddingRight: 3
 }
 
 const chatbotMain = {
-    height: 388,
+    height: 478,
     width: '100%',
     overflow: 'auto'
 }

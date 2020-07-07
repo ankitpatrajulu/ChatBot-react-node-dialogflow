@@ -12,8 +12,9 @@ const App = () =>
     (
         <div>
             <Router>
+            <Header/>
                 <div className="container">
-                    <Header/>
+
                     <Route exact path="/" component={Landing} />
                     <Route exact path="/analytics" component={Analytics} />
                     <Route exact path="/about" component={About} />
