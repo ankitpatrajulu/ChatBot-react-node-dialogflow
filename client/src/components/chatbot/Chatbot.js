@@ -193,7 +193,8 @@ const chatbotHead = {
     bottom: 0,
     right: 0,
     border: '1px solid lightgrey',
-    paddingRight: 3
+    paddingRight: 3,
+    alignContent: 'center'
 }
 
 const chatbotMain = {
