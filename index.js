@@ -2,9 +2,19 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 
+
+const config = require('./config/keys')
+const mongoose = require('mongoose')
+
+mongoose.connect(config.mongoURI, {useNewUrlParser: true, useUnifiedTopology: true})
+require('./models/Registration');
+require('./models/Find');
+require('./dbquery/QueryHandler');
+
 app.use(bodyParser.json())
 
 require('./routes/dialogFlowRoutes')(app)
+require('./routes/fulfillmentRoutes')(app)
 
 
 
