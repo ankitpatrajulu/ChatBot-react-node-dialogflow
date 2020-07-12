@@ -13,7 +13,7 @@
     "frontend": "npm run start --prefix client",
     "powerbi": "npm run start --prefix powerbi",
     "dev": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run powerbi\"",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client && npm install --prefix powerbi && node run dev --prefix powerbi"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "keywords": [],
   "author": "",
