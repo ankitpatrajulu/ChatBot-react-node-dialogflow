@@ -7,7 +7,7 @@ powerbi.bootstrap(reportContainer, { type: "report" });
 // AJAX request to get the report details from the API and pass it to the UI
 $.ajax({
     type: "GET",
-    url: "/powerbi/getEmbedToken",
+    url: "powerbi/getEmbedToken",
     dataType: "json",
     success: function(embedData) {
 

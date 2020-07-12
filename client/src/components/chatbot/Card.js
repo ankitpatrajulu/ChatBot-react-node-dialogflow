@@ -2,10 +2,10 @@ import React from 'react';
 
 const Card = (props) => (
     <div style={{ float: 'left', paddingRight: 30, width: 270 }}>
-        <div className="card">
-            <div className="card-image" style={{width: 240}}>
+        <div className="card" style={{width: 220}}>
+            <div className="card-image" style={{width: 220, height: 150}}>
                 <img alt={props.payload.fields.header.stringValue} src={props.payload.fields.image.stringValue}/>
-                <span className="card-title">{props.payload.fields.header.stringValue}</span>
+                <span className="card-title"><b>{props.payload.fields.header.stringValue}</b></span>
                     </div>
                         <div className="card-content">
                         <p>{props.payload.fields.description.stringValue}</p>

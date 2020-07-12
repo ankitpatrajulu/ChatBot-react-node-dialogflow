@@ -18,7 +18,7 @@ const App = () =>
                             <div className="nav">
                                 <Header/>
                             </div>
-                            <div className="container main">
+                            <div className="container main" id="main">
                                 <Route exact path="/" component={Landing} />
                                 <Route exact path="/analytics" component={Analytics} />
                                 <Route exact path="/about" component={About} />

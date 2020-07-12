@@ -32,6 +32,10 @@ module.exports = app => {
 
         }
 
+        function countIntentYes(agent) {     
+          agent.add('This is where the link would populate!')
+      }
+
         function getSpreadsheetData() {
           // if(jsonFetch !== undefined){
           //   jsonFetch = await axios.get('https://sheetdb.io/api/v1/4w9863nrgi2l4')
@@ -115,6 +119,26 @@ module.exports = app => {
                 }
     
                 agent.add( new dfff.Payload(agent.UNSPECIFIED, payloadData, {sendAsMessage: true, rawPayload: true}))
+        }
+
+        function customDashboard() {
+          var payloadData = {
+            "richContent": [
+                  {
+                    "type": `${parameters.InvoiceType} Invoice Count`,
+                    "title": "The sum total of all invoices",
+                    "subtitle": `${parameters.InvoiceDate}`,
+                    "image": {
+                      "src": {
+                        "rawUrl": "https://example.com/images/logo.png"
+                      }
+                    },
+                    "text": `${count}`
+                  }
+              ]
+        }
+
+        agent.add( new dfff.Payload(agent.UNSPECIFIED, payloadData, {sendAsMessage: true, rawPayload: true}))
         }
 
         function customPayload(parameters, count) {
@@ -224,7 +248,8 @@ module.exports = app => {
         intentMap.set('Default Fallback Intent', fallback)
         intentMap.set('customPayloadFunction', customPayloadFunction)
         intentMap.set('connectSpreadsheet', connectSpreadsheet)
-
+        intentMap.set('CountIntent-yes', countIntentYes)
+        
         agent.handleRequest(intentMap)
 
     })

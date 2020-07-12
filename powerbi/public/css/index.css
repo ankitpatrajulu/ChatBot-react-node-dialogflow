@@ -1,15 +1,21 @@
 
 header {
-    background-color: #007FFF;
+    background-color: #0097a7;
     height: 75px;
     width: 100%;
 }
 
-header > p {
+#logoID {
     color: #FFFFFF;
     font: bold 1.6em "segoe ui", arial, sans-serif;
     margin-left: 31px;
-    padding-top: 20px;
+    padding-top: 10px;
+} 
+
+#logo-a {
+    color: #FFFFFF;
+    font: bold 1.6em "segoe ui", arial, sans-serif;
+    text-decoration: none; 
 }
 
 main {
@@ -37,4 +43,13 @@ footer > p {
 
 iframe {
     border: none;
+}
+
+#right-p {
+    color: #FFFFFF;
+    font: bold 1.6em "segoe ui", arial, sans-serif;
+    margin-right: 31px;
+    padding-top: 20px;
+    position: absolute;
+    right: 0px;
 }

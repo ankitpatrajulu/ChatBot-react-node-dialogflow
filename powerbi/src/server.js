@@ -3,6 +3,7 @@ let embedToken = require(__dirname + '/embedTokenGenerationService.js');
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+const axios = require('axios')
 
 // Prepare server for Bootstrap, jQuery and PowerBI files
 app.use('/js', express.static('./node_modules/bootstrap/dist/js/')); // Redirect bootstrap JS
@@ -19,8 +20,13 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.get('/powerbi/fetch', function(req, res) {
+app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/../views/index.html'));
+});
+
+app.get('/powerbi', function(req, res) {
+    //res.sendFile(path.join(__dirname + '/../views/index.html'));
+    res.render(path.join(__dirname + '/../views/index.html'))
 });
 
 app.get('/powerbi/getEmbedToken', async function(req, res) {
