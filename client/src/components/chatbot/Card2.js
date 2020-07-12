@@ -5,8 +5,8 @@ const Card2 = (props) => (
         <div className="row">
             <div className="col s12 m7">
                 <div className="card">
-                    <div className="card-image">
-                        <img alt={props.payload.fields.subtitle.stringValue} src="images/sample-1.jpg"/>
+                    <div style={{paddingLeft: 10, paddingTop: 10}}className="card-image">
+                    <a target="_blank" rel="noopener noreferrer" href="/">{props.payload.fields.type.stringValue}</a>
                         <span className="card-title">{props.payload.fields.subtitle.stringValue}</span>
                     </div>
                     <div className="card-content">

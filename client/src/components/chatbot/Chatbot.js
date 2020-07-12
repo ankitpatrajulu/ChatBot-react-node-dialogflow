@@ -101,6 +101,15 @@ class Chatbot extends Component {
         
     }
 
+    async powerbi_fetch() {
+        const res = await axios.get('/powerbi/fetch')
+        let says = {
+            speaks: 'bot',
+            msg: 'Power BI has been loaded. Follow the link to see it.'
+        }
+        this.setState({messages: [...this.state.messages, says]})
+    }
+
     async node_query_fetch(){
         const res = await axios.post('/api/node_query_fetch', {userID: cookies.get('userID')})
                 let says = {
@@ -112,6 +121,7 @@ class Chatbot extends Component {
 
     componentDidMount() {
         this.df_event_query('Welcome')
+        //this.df_event_query('LoadData')
     }
 
     // componentWillUnmount() {
@@ -211,19 +221,14 @@ class Chatbot extends Component {
             message.msg.payload.fields.richContent &&
             message.msg.payload.fields.richContent.listValue.values[0]
         ) {
-
-
-
-            console.log(message.msg.payload.fields.richContent.listValue.values[0].structValue.fields)
-
             return <div key={i}>
                 <div className="card-panel grey lighten-5 z-depth-1">
                     <div style={{overflow: 'hidden'}}>
                         <div className="col s12">
                             <a href="/" className="btn-floating btn-large waves-effect waves-light red">{message.speaks}</a>
                         </div>
-                        <div style={{ overflow: 'auto', overflowY: 'scroll'}}>
-                            <div style={{ height: 300, width:message.msg.payload.fields.richContent.listValue.values.length * 270}}>
+                        <div style={{ overflow: 'auto'}}>
+                            <div style={{ height: 100, width:message.msg.payload.fields.richContent.listValue.values.length * 270}}>
                                 {this.renderCards2(message.msg.payload.fields.richContent.listValue.values)}
                             </div>
                         </div>
@@ -253,7 +258,7 @@ class Chatbot extends Component {
             return (
                 <div style={chatbotHead}>
                     <nav>
-                        <div style={{paddingLeft: 10}} className="nav-wrapper">
+                        <div style={{paddingLeft: 10}} className="nav-wrapper teal lighten-2">
                             <a className="brand-logo" href="/">ChatBot</a>
                             <ul id="nav-mobile" className="right hide-on-med-and-down">
                                 <li><a href="/" onClick={this.hide}>Close</a></li>
@@ -279,13 +284,14 @@ class Chatbot extends Component {
                     height: 40,
                     width: 400,
                     position: 'absolute',
-                    bottom: 0,
+                    bottom: 75,
                     right: 0,
                     border: '1px solid lightgrey',
-                    paddingRight: 3
+                    paddingRight: 3,
+                    paddingBottom: 30
                 }}>
                     <nav>
-                        <div style={{paddingLeft: 10}} className="nav-wrapper">
+                        <div style={{paddingLeft: 10}} className="nav-wrapper teal lighten-2">
                             <a className="brand-logo" href="/">ChatBot</a>
                             <ul id="nav-mobile" class="right hide-on-med-and-down">
                                 <li><a href="/" onClick={this.show}>Open</a></li>
@@ -302,13 +308,14 @@ class Chatbot extends Component {
 }
 
 const chatbotHead = {
-    height: 600,
+    height: 550,
     width: 400,
     position: 'absolute',
-    bottom: 0,
+    bottom: 75,
     right: 0,
     border: '1px solid lightgrey',
-    paddingRight: 3
+    paddingRight: 3,
+    paddingBottom: 100
 }
 
 const chatbotMain = {

@@ -1,4 +1,7 @@
 const chatbot = require('../chatbot/chatbot')
+const axios = require('axios')
+const path = require('path')
+
 
 module.exports = app => {
     // app.get('/', (req, res) => {
@@ -24,11 +27,12 @@ module.exports = app => {
         res.send(responses[0].queryResult)
     })
 
-    app.post('/api/node_query_fetch', async (req, res) => {
-        console.log('Reached backend from react' + req.body.cookieID )
-        let responses = await chatbot.fetchData()
-        //console.log(responses)
-        console.log('dialogflow call')
+    app.post('/api/powerbi', async (req, res) => {
+        let res2 = res
+        axios.get('localhost:5300/powerbi/fetch').then((res) => {
+            res2.render(res)
+        })
+        //console.log('dialogflow call')
         //res.send(responses)
     })
     

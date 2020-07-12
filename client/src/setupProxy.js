@@ -4,4 +4,8 @@ module.exports = function (app) {
     app.use(createProxyMiddleware('/api', {
         target: 'http://localhost:5000'
     }))
+
+    // app.use(createProxyMiddleware('/powerbi', {
+    //     target: 'http://localhost:5300'
+    // }))
 }

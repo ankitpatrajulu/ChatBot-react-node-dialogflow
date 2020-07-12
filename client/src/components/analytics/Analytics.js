@@ -4,8 +4,18 @@ import ItemList from './ItemList'
 const Analytics = () =>
     (
         <div>
-            <h2>Shop</h2>
-            <iframe width="1140" height="541.25" src="https://app.powerbi.com/reportEmbed?reportId=2daf114c-6f1b-41de-a6ce-a47a9ee821e8&groupId=4cb8da42-de39-40f7-b066-3aa2ac8fd730&autoAuth=true&ctid=7ba60b49-a6cf-4459-8011-9bdf62b87507&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLWluZGlhLWNlbnRyYWwtYS1wcmltYXJ5LXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0LyJ9" frameborder="0" allowFullScreen="true"></iframe>
+            <h2>POWER BI</h2>
+            <section id="report-container" class="embed-container col-lg-offset-4 col-lg-7 col-md-offset-5 col-md-7 col-sm-offset-5 col-sm-7 mt-5">
+            </section>
+
+            <section class="error-container m-5">
+            </section>
+
+            <script src="/js/jquery.min.js"></script>
+            <script src="/js/bootstrap.min.js"></script>
+            <script src="/js/powerbi.min.js"></script>
+            <script src="./index.js"></script>
+
             <ItemList />
         </div>
     )
