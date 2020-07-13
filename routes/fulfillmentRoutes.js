@@ -37,11 +37,10 @@ module.exports = app => {
       }
 
         function getSpreadsheetData() {
-          // if(jsonFetch !== undefined){
-          //   jsonFetch = await axios.get('https://sheetdb.io/api/v1/4w9863nrgi2l4')
-          // }
-          // return jsonFetch
-          return axios.get('https://sheetdb.io/api/v1/4w9863nrgi2l4')
+          if(jsonFetch === undefined){
+            jsonFetch = axios.get('https://sheetdb.io/api/v1/4w9863nrgi2l4')
+          }
+          return jsonFetch
         }
 
         function connectSpreadsheet(agent) {
@@ -200,7 +199,7 @@ module.exports = app => {
               condition = `InvoiceDate=${datenew}`
               break;
 
-            case 'All':
+            case 'All': 
               condition = ''
               break;
             }
@@ -237,6 +236,134 @@ module.exports = app => {
           })
         }
 
+        function getTopSupplierDuplicate(){
+          return getSpreadsheetData().then((res) => {
+              const condition = "*ErrDup=TRUE"
+              const condition2 = formattedDate('2020-03-31T06:30:00.000+00:00')
+              //  & InvoiceDate=${condition2}
+              var resultSN = jsonQuery(`data[${condition}].Supplier_Name`, {
+                  data: res
+              }).value
+              var resultIT = jsonQuery(`data[${condition}].InvoiceTotal`, {
+                  data: res
+              }).value
+              //console.log(result)
+              var arr = []
+              const distinct = [...new Set(resultSN)]
+              distinct.map(invoice => {
+                  var rep = getOccurrence(resultSN, resultIT, invoice)
+                  arr.push([invoice, rep.count, rep.total.toFixed(3)])
+              })
+              //console.log(arr[0][1])
+              arr.sort(compareSecondColumn)
+
+              customPayloadSupplier(arr)
+              
+              //console.log(distinct)
+              // let count = 0
+              // distinct.map(invoice => {
+              //     count++
+              // })
+              // console.log('For Distinct Vendors',count)
+              // return count
+          }).catch((e) => {
+              console.log(e)
+          })
+      }
+
+      function customPayloadSupplier(array) {
+        var payloadData = {
+            "richContent": [
+                  {
+                    "type": `${array[1][0]}`,
+                    "title": "The sum total of all invoices",
+                    "subtitle": `Duplicate Invoices- ${array[1][1]}`,
+                    "image": {
+                      "src": {
+                        "rawUrl": "https://example.com/images/logo.png"
+                      }
+                    },
+                    "text": `${array[1][2]} $`
+                  },
+                  {
+                    "type": `${array[2][0]}`,
+                    "title": "The sum total of all invoices",
+                    "subtitle": `Duplicate Invoices- ${array[2][1]}`,
+                    "image": {
+                      "src": {
+                        "rawUrl": "https://example.com/images/logo.png"
+                      }
+                    },
+                    "text": `${array[2][2]} $`
+                   }
+                  ,
+                  {
+                    "type": `${array[3][0]}`,
+                    "title": "The sum total of all invoices",
+                    "subtitle": `Duplicate Invoices- ${array[3][1]}`,
+                    "image": {
+                      "src": {
+                        "rawUrl": "https://example.com/images/logo.png"
+                      }
+                    },
+                    "text": `${array[3][2]} $`
+                  },
+                  {
+                    "type": `${array[4][0]}`,
+                    "title": "The sum total of all invoices",
+                    "subtitle": `Duplicate Invoices- ${array[4][1]}`,
+                    "image": {
+                      "src": {
+                        "rawUrl": "https://example.com/images/logo.png"
+                      }
+                    },
+                    "text": `${array[4][2]} $`
+                  },
+                  {
+                    "type": `${array[5][0]}`,
+                    "title": "The sum total of all invoices",
+                    "subtitle": `Duplicate Invoices- ${array[5][1]}`,
+                    "image": {
+                      "src": {
+                        "rawUrl": "https://example.com/images/logo.png"
+                      }
+                    },
+                    "text": `${array[5][2]} $`
+                  }
+                ]
+             }
+          agent.add( new dfff.Payload(agent.UNSPECIFIED, payloadData, {sendAsMessage: true, rawPayload: true}))
+      }
+      
+      function compareSecondColumn(a, b) {
+          if (a[1] === b[1]) {
+              return 0;
+          }
+          else {
+              return (a[1] > b[1]) ? -1 : 1;
+          }
+      }
+      
+      function getOccurrence(array, arrayIT, value) {
+          let total = 0.00
+          let i = 0
+          let count = array.filter((v) => {
+              if(v === value) {
+                  total = parseFloat(total) + parseFloat(arrayIT[i++])
+                  return (v === value)
+              }else {
+                  i++
+                  return (v === value)
+              }
+          }).length;
+          return {
+              count,
+              total
+          }
+      }
+      
+      
+
         function fallback(agent) {
             agent.add('I didn\'t understand!')
             agent.add('I\'m sorry, can you try again?')
@@ -249,6 +376,8 @@ module.exports = app => {
         intentMap.set('customPayloadFunction', customPayloadFunction)
         intentMap.set('connectSpreadsheet', connectSpreadsheet)
         intentMap.set('CountIntent-yes', countIntentYes)
+        intentMap.set('topFiveDuplicateSupplier', getTopSupplierDuplicate)
+        
         
         agent.handleRequest(intentMap)
 

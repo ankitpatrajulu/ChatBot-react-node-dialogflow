@@ -11,8 +11,7 @@
     "start": "node index.js",
     "backend": "nodemon index.js",
     "frontend": "npm run start --prefix client",
-    "powerbi": "npm run start --prefix powerbi",
-    "dev": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run powerbi\"",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "keywords": [],
