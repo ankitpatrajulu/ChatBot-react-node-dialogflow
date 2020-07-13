@@ -256,7 +256,7 @@ module.exports = app => {
                   arr.push([invoice, rep.count, rep.total.toFixed(3)])
               })
               //console.log(arr[0][1])
-              if(parameters === 'amount') {
+              if(parameters.maxDupCount === 'amount') {
                 arr.sort(compareThirdColumn)
               } else{
                 arr.sort(compareSecondColumn)
