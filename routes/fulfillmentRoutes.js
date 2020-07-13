@@ -236,7 +236,8 @@ module.exports = app => {
           })
         }
 
-        function getTopSupplierDuplicate(){
+        function getTopSupplierDuplicate(agent){
+          const parameters = agent.parameters
           return getSpreadsheetData().then((res) => {
               const condition = "*ErrDup=TRUE"
               const condition2 = formattedDate('2020-03-31T06:30:00.000+00:00')
@@ -255,8 +256,11 @@ module.exports = app => {
                   arr.push([invoice, rep.count, rep.total.toFixed(3)])
               })
               //console.log(arr[0][1])
-              arr.sort(compareSecondColumn)
-
+              if(parameters === 'amount') {
+                arr.sort(compareThirdColumn)
+              } else{
+                arr.sort(compareSecondColumn)
+              }
               customPayloadSupplier(arr)
               
               //console.log(distinct)
@@ -336,13 +340,22 @@ module.exports = app => {
       }
       
       function compareSecondColumn(a, b) {
-          if (a[2] === b[2]) {
+          if (a[1] === b[1]) {
               return 0;
           }
           else {
-              return (a[2] > b[2]) ? -1 : 1;
+              return (a[1] > b[1]) ? -1 : 1;
           }
       }
+
+      function compareThirdColumn(a, b) {
+        if (parseFloat(a[2]) === parseFloat(b[2])) {
+            return 0;
+        }
+        else {
+            return ( parseFloat(a[2]) >  parseFloat(b[2])) ? -1 : 1;
+        }
+    }
       
       function getOccurrence(array, arrayIT, value) {
           let total = 0.00
