@@ -276,7 +276,7 @@ module.exports = app => {
             "richContent": [
                   {
                     "type": `${array[1][0]}`,
-                    "title": `${array[1][2]} $`,
+                    "title": `Duplicate Invoices- ${array[1][1]}`,
                     "subtitle": `Duplicate Invoices- ${array[1][1]}`,
                     "image": {
                       "src": {
@@ -287,7 +287,7 @@ module.exports = app => {
                   },
                   {
                     "type": `${array[2][0]}`,
-                    "title": `${array[2][2]} $`,
+                    "title": `Duplicate Invoices- ${array[2][1]}`,
                     "subtitle": `Duplicate Invoices- ${array[2][1]}`,
                     "image": {
                       "src": {
@@ -299,7 +299,7 @@ module.exports = app => {
                   ,
                   {
                     "type": `${array[3][0]}`,
-                    "title": `${array[3][2]} $`,
+                    "title": `Duplicate Invoices- ${array[3][1]}`,
                     "subtitle": `Duplicate Invoices- ${array[3][1]}`,
                     "image": {
                       "src": {
@@ -310,7 +310,7 @@ module.exports = app => {
                   },
                   {
                     "type": `${array[4][0]}`,
-                    "title": `${array[4][2]} $`,
+                    "title": `Duplicate Invoices- ${array[4][1]}`,
                     "subtitle": `Duplicate Invoices- ${array[4][1]}`,
                     "image": {
                       "src": {
@@ -321,7 +321,7 @@ module.exports = app => {
                   },
                   {
                     "type": `${array[5][0]}`,
-                    "title": `${array[5][2]} $`,
+                    "title": `Duplicate Invoices- ${array[5][1]}`,
                     "subtitle": `Duplicate Invoices- ${array[5][1]}`,
                     "image": {
                       "src": {
