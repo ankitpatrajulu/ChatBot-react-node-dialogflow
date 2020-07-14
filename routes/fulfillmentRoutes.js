@@ -541,7 +541,7 @@ module.exports = app => {
     function getAllInvoicesCount(agent) {
       const date = agent.parameters.date
       return getMetricsSpreadsheetData().then((res) => {
-          const condition = formattedDate(date)
+          const condition = formattedDate2(date)
           var totalInvoicesReceived = jsonQuery(`data[ProcessingDate=${condition}].InvoiceCount`, {
               data: res
           }).value
@@ -558,7 +558,9 @@ module.exports = app => {
           var deloitteRejected = jsonQuery(`data[ProcessingDate=${condition}].DeloitteRejected`, {
               data: res
           }).value
-          
+
+          console.log(`On ${condition}, Deloitte received ${totalInvoicesReceived} Invoices.\nWe successfully processed ${successfulProcessed} invoices\n-> ${successfulPOProcessed} PO and ${successfulNONPOProcessed} Non-PO.\n->We rejected ${deloitteRejected} Invoices.`)
+
           totalInvoiceCountPayload({
             datenew : condition,
             totalInvoicesReceived,
@@ -567,8 +569,7 @@ module.exports = app => {
             successfulNONPOProcessed,
             deloitteRejected
           })
-          //console.log(`On ${condition}, Deloitte received ${totalInvoicesReceived} Invoices.\nWe successfully processed ${successfulProcessed} invoices\n-> ${successfulPOProcessed} PO and ${successfulNONPOProcessed} Non-PO.\n->We rejected ${deloitteRejected} Invoices.`)
-  
+            
           //console.log(resultSN)
           //return resultSN
       }).catch((e) => {
@@ -577,10 +578,11 @@ module.exports = app => {
     }
 
     function totalInvoiceCountPayload(invoice) {
+      console.log(invoice)
       var payloadData = {
           "richContent": [
                 {
-                  "type": `On ${invoice.date}\n, Deloitte received ${invoice.totalInvoicesReceived} invoices`,
+                  "type": `On ${invoice.datenew}\n, Deloitte received ${invoice.totalInvoicesReceived} invoices`,
                   "title": `Successfully Processed -> ${invoice.successfulProcessed}\nPO -> ${invoice.successfulPOProcessed}\nNON PO -> ${invoice.successfulNONPOProcessed}`,
                   "subtitle": "Not Used Payload Field",
                   "image": {
