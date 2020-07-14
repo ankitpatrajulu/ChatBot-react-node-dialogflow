@@ -537,6 +537,64 @@ module.exports = app => {
             console.log(e)
         })
     }
+
+    function getAllInvoicesCount(agent) {
+      const date = agent.parameters.date
+      return getMetricsSpreadsheetData().then((res) => {
+          const condition = formattedDate(date)
+          var totalInvoicesReceived = jsonQuery(`data[ProcessingDate=${condition}].InvoiceCount`, {
+              data: res
+          }).value
+          //console.log(totalInvoicesReceived)
+          var successfulProcessed = jsonQuery(`data[ProcessingDate=${condition}].InvoicesSuccesssfulProcessed`, {
+              data: res
+          }).value
+          var successfulPOProcessed = jsonQuery(`data[ProcessingDate=${condition}].Invoices Successsful Processed-PO`, {
+              data: res
+          }).value
+          var successfulNONPOProcessed = jsonQuery(`data[ProcessingDate=${condition}].Invoices Successsful Processed-non-PO`, {
+              data: res
+          }).value
+          var deloitteRejected = jsonQuery(`data[ProcessingDate=${condition}].DeloitteRejected`, {
+              data: res
+          }).value
+          
+          totalInvoiceCountPayload({
+            datenew : condition,
+            totalInvoicesReceived,
+            successfulProcessed,
+            successfulPOProcessed,
+            successfulNONPOProcessed,
+            deloitteRejected
+          })
+          //console.log(`On ${condition}, Deloitte received ${totalInvoicesReceived} Invoices.\nWe successfully processed ${successfulProcessed} invoices\n-> ${successfulPOProcessed} PO and ${successfulNONPOProcessed} Non-PO.\n->We rejected ${deloitteRejected} Invoices.`)
+  
+          //console.log(resultSN)
+          //return resultSN
+      }).catch((e) => {
+          console.log(e)
+      })
+    }
+
+    function totalInvoiceCountPayload(invoice) {
+      var payloadData = {
+          "richContent": [
+                {
+                  "type": `On ${invoice.date}\n, Deloitte received ${invoice.totalInvoicesReceived} invoices`,
+                  "title": `Successfully Processed -> ${invoice.successfulProcessed}\nPO -> ${invoice.successfulPOProcessed}\nNON PO -> ${invoice.successfulNONPOProcessed}`,
+                  "subtitle": "Not Used Payload Field",
+                  "image": {
+                    "src": {
+                      "rawUrl": "https://example.com/images/logo.png"
+                    }
+                  },
+                  "text": `Deloitte Rejected- ${invoice.deloitteRejected}`
+                }
+            ]
+      }
+
+      agent.add( new dfff.Payload(agent.UNSPECIFIED, payloadData, {sendAsMessage: true, rawPayload: true}))
+    }
       
       
 
@@ -547,7 +605,7 @@ module.exports = app => {
 
         let intentMap = new Map()
         //intentMap.set('LoadData', loadData)
-        intentMap.set('CountIntent', countInvoices)
+        intentMap.set('ErrorCountIntent', countInvoices)
         intentMap.set('Default Fallback Intent', fallback)
         intentMap.set('customPayloadFunction', customPayloadFunction)
         intentMap.set('connectSpreadsheet', connectSpreadsheet)
@@ -556,6 +614,7 @@ module.exports = app => {
         intentMap.set('TopSupplierPO', getTopPOSupplier)
         intentMap.set('TopSupplierNONPO', getTopNONPOSupplier)
         intentMap.set('ProcessedInvoicesIntent', getProcessedInvoicesCount)
+        intentMap.set('TotalCountIntent', getAllInvoicesCount)
         
         agent.handleRequest(intentMap)
 
