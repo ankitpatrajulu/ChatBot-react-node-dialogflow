@@ -1,10 +1,10 @@
 import React from 'react'
 
 const Card2 = (props) => (
-    <div style={{ float: 'left', paddingRight: 30, width: 270 }}>
+    <div style={{ float: 'left', paddingRight: 30, width: 330 }}>
         <div className="row">
             <div className="col s12 m7">
-                <div className="card" style={{width: 220}}>
+                <div className="card" style={{width: 300}}>
                     <div style={{paddingLeft: 10, paddingTop: 10}}className="card-image">
                     <a target="_blank" rel="noopener noreferrer" href="/">{props.payload.fields.type.stringValue}</a>
                         <span className="card-title">{props.payload.fields.subtitle.stringValue}</span>
