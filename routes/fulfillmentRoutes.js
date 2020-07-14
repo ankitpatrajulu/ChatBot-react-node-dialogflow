@@ -18,6 +18,8 @@ const {
 } = require('readable-stream')
 
 let jsonFetch = undefined
+let jsonFetchPO = undefined
+let jsonFetchNONPO = undefined
 
 module.exports = app => {
     app.post('/', async (req, res) => {
@@ -41,6 +43,20 @@ module.exports = app => {
             jsonFetch = axios.get('https://sheetdb.io/api/v1/4w9863nrgi2l4')
           }
           return jsonFetch
+        }
+
+        function getPOSpreadsheetData() {
+          if(jsonFetchPO === undefined){
+            jsonFetchPO = axios.get('https://sheetdb.io/api/v1/x8wyjtqfkwnxg')
+          }
+          return jsonFetchPO
+        }
+
+        function getNONPOSpreadsheetData() {
+          if(jsonFetchNONPO === undefined){
+            jsonFetchNONPO = axios.get('https://sheetdb.io/api/v1/nc2daw5oaennt')
+          }
+          return jsonFetchNONPO
         }
 
         function connectSpreadsheet(agent) {
@@ -275,6 +291,111 @@ module.exports = app => {
           })
       }
 
+      function TopSupplierPO_NONPO(agent) {
+        if(agent.parameters.invoiceType === 'PO') {
+          return getTopPOSupplier()
+        }else {
+          return getTopNONPOSupplier()
+        }
+      }
+
+      function getTopPOSupplier() {
+        return getPOSpreadsheetData().then((res) => {
+            //const condition = "*ErrDup=TRUE"
+            //const condition2 = formattedDate('2020-03-31T06:30:00.000+00:00')
+            //  & InvoiceDate=${condition2}
+            var resultSN = jsonQuery(`data.SupplierNumber`, {
+                data: res
+            }).value
+            var resultIT = jsonQuery(`data.InvoiceTotal`, {
+                data: res
+            }).value
+            //console.log(result)
+            var arr = []
+            const distinct = [...new Set(resultSN)]
+            distinct.map(invoice => {
+                var rep = getOccurrence(resultSN, resultIT, invoice)
+                arr.push([invoice, rep.count, rep.total.toFixed(3)])
+            })
+            //console.log(arr[0][1])
+            arr.sort(compareThirdColumn)
+            // for(i = 1; i < 6; i++){
+            //     console.log(arr[i])
+            // }
+            
+            //console.log(distinct)
+            let count = 0
+            distinct.map(invoice => {
+                count++
+            })
+
+            topFiveSupplierPO_NONPO_Payload(arr, count, 'PO')
+            // console.log('For Distinct Vendors',count)
+            // return count
+        }).catch((e) => {
+            console.log(e)
+        })
+    }
+    
+    function getTopNONPOSupplier() {
+        return getNONPOSpreadsheetData().then((res) => {
+            //const condition = "*ErrDup=TRUE"
+            //const condition2 = formattedDate('2020-03-31T06:30:00.000+00:00')
+            //  & InvoiceDate=${condition2}
+            var resultSN = jsonQuery(`data.SupplierNumber`, {
+                data: res
+            }).value
+            var resultIT = jsonQuery(`data.InvoiceTotal`, {
+                data: res
+            }).value
+            //console.log(result)
+            var arr = []
+            const distinct = [...new Set(resultSN)]
+            distinct.map(invoice => {
+                var rep = getOccurrence(resultSN, resultIT, invoice)
+                arr.push([invoice, rep.count, rep.total.toFixed(3)])
+            })
+            //console.log(arr[0][1])
+            arr.sort(compareThirdColumn)
+            // for(i = 0; i < 5; i++){
+            //     console.log(arr[i])
+            // }
+            
+            //console.log(distinct)
+            let count = 0
+            distinct.map(invoice => {
+                count++
+            })
+
+            topFiveSupplierPO_NONPO_Payload(arr, count, 'NON PO')
+            //console.log('For Distinct Vendors',count)
+            //return count
+        }).catch((e) => {
+            console.log(e)
+        })
+    }
+
+    function topFiveSupplierPO_NONPO_Payload(array, count, type) {
+      var payloadData = {
+          "richContent": [
+                {
+                  "type": `Top 5 ${type} Supplier`,
+                  "title": `1- ${array[0][0]} -> $${array[0][2]}/n2- ${array[1][0]} -> $${array[1][2]}/n3- ${array[2][0]} -> $${array[2][2]}/n4- ${array[3][0]} -> $${array[3][2]}/n5- ${array[4][0]} -> $${array[4][2]}`,
+                  "subtitle": `1- ${array[0][0]}/n2- ${array[1][0]}/n3- ${array[2][0]}/n4- ${array[3][0]}/n5- ${array[4][0]}`,
+                  "image": {
+                    "src": {
+                      "rawUrl": "https://example.com/images/logo.png"
+                    }
+                  },
+                  "text": `Total Distinct Vendors- ${count}`
+                }
+            ]
+      }
+
+      agent.add( new dfff.Payload(agent.UNSPECIFIED, payloadData, {sendAsMessage: true, rawPayload: true}))
+    }
+    
+
       function customPayloadSupplier(array) {
         var payloadData = {
             "richContent": [
@@ -390,7 +511,8 @@ module.exports = app => {
         intentMap.set('connectSpreadsheet', connectSpreadsheet)
         intentMap.set('CountIntent-yes', countIntentYes)
         intentMap.set('topFiveDuplicateSupplier', getTopSupplierDuplicate)
-        
+        intentMap.set('TopSupplierPO_NONPO', TopSupplierPO_NONPO)
+        TopSupplierPO_NONPO
         
         agent.handleRequest(intentMap)
 
