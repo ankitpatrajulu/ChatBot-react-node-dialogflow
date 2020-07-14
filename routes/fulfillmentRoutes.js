@@ -380,7 +380,7 @@ module.exports = app => {
           "richContent": [
                 {
                   "type": `Top 5 ${type} Supplier`,
-                  "title": `1- ${array[0][0]} -> $${array[0][2]}\n\n2- ${array[1][0]} -> $${array[1][2]}\n\n3- ${array[2][0]} -> $${array[2][2]}\n\n4- ${array[3][0]} -> $${array[3][2]}\n\n5- ${array[4][0]} -> $${array[4][2]}`,
+                  "title": `${array[0][0]} -> $${array[0][2]}\n\n${array[1][0]} -> $${array[1][2]}\n\n${array[2][0]} -> $${array[2][2]}\n\n${array[3][0]} -> $${array[3][2]}\n\n${array[4][0]} -> $${array[4][2]}`,
                   "subtitle": `1- ${array[0][0]}/n2- ${array[1][0]}/n3- ${array[2][0]}/n4- ${array[3][0]}/n5- ${array[4][0]}`,
                   "image": {
                     "src": {
