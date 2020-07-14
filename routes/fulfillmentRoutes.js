@@ -515,7 +515,7 @@ module.exports = app => {
 
       function getProcessedInvoicesCount(agent) {
         const date = agent.parameters.date
-        getMetricsSpreadsheetData().then((res) => {
+        return getMetricsSpreadsheetData().then((res) => {
             const condition = formattedDate(date)
             var resultSN = jsonQuery(`data[ProcessingDate=${condition}].Invoices Successsful processed`, {
                 data: res
