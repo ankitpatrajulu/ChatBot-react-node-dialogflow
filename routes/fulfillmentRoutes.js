@@ -291,15 +291,15 @@ module.exports = app => {
           })
       }
 
-      function TopSupplierPO_NONPO(agent) {
-        if(agent.parameters.InvoiceType === 'PO') {
-          return getTopPOSupplier()
-        }else {
-          return getTopNONPOSupplier()
-        }
-      }
+      // function TopSupplierPO_NONPO(agent) {
+      //   if(agent.parameters.InvoiceType === 'PO') {
+      //     return getTopPOSupplier()
+      //   }else {
+      //     return getTopNONPOSupplier()
+      //   }
+      // }
 
-      function getTopPOSupplier() {
+      function getTopPOSupplier(agent) {
         return getPOSpreadsheetData().then((res) => {
             //const condition = "*ErrDup=TRUE"
             //const condition2 = formattedDate('2020-03-31T06:30:00.000+00:00')
@@ -337,7 +337,7 @@ module.exports = app => {
         })
     }
     
-    function getTopNONPOSupplier() {
+    function getTopNONPOSupplier(agent) {
         return getNONPOSpreadsheetData().then((res) => {
             //const condition = "*ErrDup=TRUE"
             //const condition2 = formattedDate('2020-03-31T06:30:00.000+00:00')
@@ -511,8 +511,8 @@ module.exports = app => {
         intentMap.set('connectSpreadsheet', connectSpreadsheet)
         intentMap.set('CountIntent-yes', countIntentYes)
         intentMap.set('topFiveDuplicateSupplier', getTopSupplierDuplicate)
-        intentMap.set('TopSupplierPO_NONPO', TopSupplierPO_NONPO)
-        TopSupplierPO_NONPO
+        intentMap.set('TopSupplierPO', getTopPOSupplier)
+        intentMap.set('TopSupplierNONPO', getTopNONPOSupplier)
         
         agent.handleRequest(intentMap)
 
