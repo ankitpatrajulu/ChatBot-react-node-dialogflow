@@ -329,7 +329,7 @@ module.exports = app => {
                 count++
             })
 
-            topFiveSupplierPO_NONPO_Payload(arr, count, 'PO')
+            topFiveSupplierPO_NONPO_Payload(arr.shift(), count, 'PO')
             // console.log('For Distinct Vendors',count)
             // return count
         }).catch((e) => {
