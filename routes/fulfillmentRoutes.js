@@ -319,6 +319,7 @@ module.exports = app => {
             })
             //console.log(arr[0][1])
             arr.sort(compareThirdColumn)
+            arr.shift()
             // for(i = 1; i < 6; i++){
             //     console.log(arr[i])
             // }
@@ -329,7 +330,7 @@ module.exports = app => {
                 count++
             })
 
-            topFiveSupplierPO_NONPO_Payload(arr.shift(), count, 'PO')
+            topFiveSupplierPO_NONPO_Payload(arr, count, 'PO')
             // console.log('For Distinct Vendors',count)
             // return count
         }).catch((e) => {
