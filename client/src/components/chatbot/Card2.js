@@ -1,7 +1,7 @@
 import React from 'react'
 
 const Card2 = (props) => (
-    <div style={{ float: 'left', paddingRight: 30, width: 330 }}>
+    <div style={{ float: 'left', paddingRight: 30, width: 300 }}>
         <div className="row">
             <div className="col s12 m7">
                 <div className="card" style={{width: 300}}>

@@ -20,6 +20,8 @@ const {
 let jsonFetch = undefined
 let jsonFetchPO = undefined
 let jsonFetchNONPO = undefined
+let jsonFetchMetrics = undefined
+let jsonFetchWeekEndDup = undefined
 
 module.exports = app => {
     app.post('/', async (req, res) => {
@@ -58,6 +60,20 @@ module.exports = app => {
           }
           return jsonFetchNONPO
         }
+
+        function getMetricsSpreadsheetData() {
+          if(jsonFetchMetrics === undefined){
+              jsonFetchMetrics = axios.get('https://sheetdb.io/api/v1/ju9kztgsx5q84')
+          }
+          return jsonFetchMetrics
+      }
+      
+      function getWeekEndDupSpreadsheetData() {
+          if(jsonFetchWeekEndDup === undefined){
+              jsonFetchWeekEndDup = axios.get('https://sheetdb.io/api/v1/wgh5gffe9h29e')
+          }
+          return jsonFetchWeekEndDup
+      }
 
         function connectSpreadsheet(agent) {
           const name = agent.parameters.name
@@ -496,6 +512,20 @@ module.exports = app => {
               total
           }
       }
+
+      function getProcessedInvoicesCount(agent) {
+        const date = agent.parameters.date
+        getMetricsSpreadsheetData().then((res) => {
+            const condition = formattedDate(date)
+            var resultSN = jsonQuery(`data[ProcessingDate=${condition}].Invoices Successsful processed`, {
+                data: res
+            }).value
+            //console.log(resultSN)
+            agent.add(`Total Processed Invoices on ${condition} are ${resultSN}`)
+        }).catch((e) => {
+            console.log(e)
+        })
+    }
       
       
 
@@ -514,6 +544,7 @@ module.exports = app => {
         intentMap.set('topFiveDuplicateSupplier', getTopSupplierDuplicate)
         intentMap.set('TopSupplierPO', getTopPOSupplier)
         intentMap.set('TopSupplierNONPO', getTopNONPOSupplier)
+        intentMap.set('ProcessedInvoicesIntent', getProcessedInvoicesCount)
         
         agent.handleRequest(intentMap)
 

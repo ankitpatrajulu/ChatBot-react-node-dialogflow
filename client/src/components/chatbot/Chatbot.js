@@ -229,7 +229,7 @@ class Chatbot extends Component {
                             <a href="/" className="btn-floating btn-large waves-effect waves-light red">{message.speaks}</a>
                         </div>
                         <div style={{ overflow: 'auto'}}>
-                            <div style={{ height: 60, width:message.msg.payload.fields.richContent.listValue.values.length * 270}}>
+                            <div style={{ height: 60, width:message.msg.payload.fields.richContent.listValue.values.length * 340}}>
                                 {this.renderCards2(message.msg.payload.fields.richContent.listValue.values)}
                                 
                             </div>
