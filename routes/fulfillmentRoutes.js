@@ -112,6 +112,14 @@ module.exports = app => {
       return formattedDate
     }
 
+    function formattedDate2(givenDate, type) {
+      const pattern = date.compile('YYYY-MM-DD...')
+      const newdate = date.parse(givenDate, pattern)
+      let formattedDate = ''
+      formattedDate = date.format(newdate, 'DD/MM/YYYY')
+      return formattedDate
+    }
+
     async function obtainCondition(agent) {
       const parameters = agent.parameters
       let condition = ''
@@ -516,7 +524,7 @@ module.exports = app => {
       function getProcessedInvoicesCount(agent) {
         const date = agent.parameters.date
         return getMetricsSpreadsheetData().then((res) => {
-            const condition = formattedDate(date)
+            const condition = formattedDate2(date)
             var resultSN = jsonQuery(`data[ProcessingDate=${condition}].Invoices Successsful processed`, {
                 data: res
             }).value
