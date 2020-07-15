@@ -205,48 +205,69 @@ module.exports = app => {
         }
 
 
-        function countInvoices(agent) {
+        function errorCountInvoices(agent) {
           const parameters = agent.parameters
           return getSpreadsheetData().then((res) => {
             //const res = jsonFetch
             //console.log(jsonFetch)
             let condition = ''
-            let datenew = ''
+            let datenew = '*'
             if(parameters.date) {
               datenew = formattedDate(parameters.date, parameters.InvoiceType)
-              console.log(datenew)
+              //console.log(datenew)
             }
-            console.log(parameters.InvoiceType)
-            switch(parameters.InvoiceType){
-              case 'PO':
-                console.log(datenew)
-                condition = `PO_Invoice=TRUE & InvoiceDate=${datenew}`
-                // PO_Invoice=TRUE & 
-                // let count = querySpreadsheet(res, condition)
-                // var result = jsonQuery(`data[*${condition}].InvoiceNumber`, {
-                //   data: res
-                // }).value
-                // console.log(result)
-                //   let count = 0
-                //   result.map(invoice => {
-                //       count++
-                //   })
-                  // agent.add(`The count is ${count}.`)
-                //console.log(result)
-            break;
+            if(parameters.InvoiceType[0] === 'Exception'){
+              if(parameters.InvoiceType[1]){
+                switch (parameters.InvoiceType[1]){
+                  case 'PO':
+                    console.log(datenew)
+                    condition = `PO_Invoice=TRUE & InvoiceDate=${datenew}`
+                    break;
 
-            case 'Non PO':
-              condition = `PO_Invoice=FALSE & InvoiceDate=${datenew}`
+                  case 'Non PO':
+                    condition = `PO_Invoice=FALSE & InvoiceDate=${datenew}`
+                    break;
+                  
+                  case 'All': 
+                    condition = ''
+                    break;
+                  }
+                  
+                }
+              }else {
+              switch(parameters.InvoiceType[0]){
+                case 'PO':
+                  console.log(datenew)
+                  condition = `PO_Invoice=TRUE & InvoiceDate=${datenew}`
+                  // PO_Invoice=TRUE & 
+                  // let count = querySpreadsheet(res, condition)
+                  // var result = jsonQuery(`data[*${condition}].InvoiceNumber`, {
+                  //   data: res
+                  // }).value
+                  // console.log(result)
+                  //   let count = 0
+                  //   result.map(invoice => {
+                  //       count++
+                  //   })
+                    // agent.add(`The count is ${count}.`)
+                  //console.log(result)
               break;
+  
+              case 'Non PO':
+                condition = `PO_Invoice=FALSE & InvoiceDate=${datenew}`
+                break;
+              
+              case 'Exception':
+                condition = `InvoiceDate=${datenew}`
+                break;
+  
+              case 'All': 
+                condition = ''
+                break;
+              }
+            }
+            //console.log(parameters.InvoiceType)
             
-            case 'Exception':
-              condition = `InvoiceDate=${datenew}`
-              break;
-
-            case 'All': 
-              condition = ''
-              break;
-            }
             let count = querySpreadsheet(res, condition)
 
             customPayload(parameters, count)
@@ -343,7 +364,7 @@ module.exports = app => {
             const distinct = [...new Set(resultSN)]
             distinct.map(invoice => {
                 var rep = getOccurrence(resultSN, resultIT, invoice)
-                arr.push([invoice, rep.count, rep.total.toFixed(3)])
+                arr.push([invoice, rep.count, rep.total.toFixed(1)])
             })
             //console.log(arr[0][1])
             arr.sort(compareThirdColumn)
@@ -382,7 +403,7 @@ module.exports = app => {
             const distinct = [...new Set(resultSN)]
             distinct.map(invoice => {
                 var rep = getOccurrence(resultSN, resultIT, invoice)
-                arr.push([invoice, rep.count, rep.total.toFixed(3)])
+                arr.push([invoice, rep.count, rep.total.toFixed(1)])
             })
             //console.log(arr[0][1])
             arr.sort(compareThirdColumn)
@@ -409,14 +430,24 @@ module.exports = app => {
           "richContent": [
                 {
                   "type": `Top 5 ${type} Supplier`,
-                  "title": `${array[0][0]} -> $${array[0][2]}\n\n${array[1][0]} -> $${array[1][2]}\n\n${array[2][0]} -> $${array[2][2]}\n\n${array[3][0]} -> $${array[3][2]}\n\n${array[4][0]} -> $${array[4][2]}`,
+                  "title": "default",
                   "subtitle": `1- ${array[0][0]}/n2- ${array[1][0]}/n3- ${array[2][0]}/n4- ${array[3][0]}/n5- ${array[4][0]}`,
                   "image": {
                     "src": {
                       "rawUrl": "https://example.com/images/logo.png"
                     }
                   },
-                  "text": `Total Distinct Vendors- ${count}`
+                  "text": `Total Distinct Vendors- ${count}`,
+                  "vendor1" : `${array[0][0]}`,
+                  "data1" : `${array[0][2]}`,
+                  "vendor2": `${array[1][0]}`,
+                  "data2": `${array[1][2]}`,
+                  "vendor3": `${array[2][0]}`,
+                  "data3": `${array[2][2]}`,
+                  "vendor4": `${array[3][0]}`,
+                  "data4": `${array[3][2]}`,
+                  "vendor5": `${array[4][0]}`,
+                  "data5": `${array[4][2]}`
                 }
             ]
       }
@@ -529,7 +560,7 @@ module.exports = app => {
         const date = agent.parameters.date[0]
         return getMetricsSpreadsheetData().then((res) => {
             const condition = formattedDate2(date)
-            var resultSN = jsonQuery(`data[ProcessingDate=${condition}].Invoices Successsful processed`, {
+            var resultSN = jsonQuery(`data[ProcessingDate=${condition}].InvoicesSuccesssfulProcessed`, {
                 data: res
             }).value
             //console.log(resultSN)
@@ -601,6 +632,7 @@ module.exports = app => {
       
       
         function WelcomeIntent(agent) {
+          //let agent2 = agent
           getSpreadsheetData()
           getPOSpreadsheetData()
           getNONPOSpreadsheetData()
@@ -622,6 +654,10 @@ module.exports = app => {
             case 3 : agent.add('Welcome to Invoice Bot!')
             break;
           }
+          // let that = this
+          // setTimeout(() => {
+          //   that.agent2.add(' What can I do for you today?')
+          // },1000)
           agent.add(' What can I do for you today?')
         }
 
@@ -633,10 +669,10 @@ module.exports = app => {
         let intentMap = new Map()
         //intentMap.set('LoadData', loadData)
         intentMap.set('WelcomeIntent', WelcomeIntent)
-        intentMap.set('ErrorCountIntent', countInvoices)
+        intentMap.set('ErrorCountIntent', errorCountInvoices)
         intentMap.set('Default Fallback Intent', fallback)
-        intentMap.set('customPayloadFunction', customPayloadFunction)
-        intentMap.set('connectSpreadsheet', connectSpreadsheet)
+        //intentMap.set('customPayloadFunction', customPayloadFunction)
+        //intentMap.set('connectSpreadsheet', connectSpreadsheet)
         intentMap.set('CountIntent-yes', countIntentYes)
         intentMap.set('topFiveDuplicateSupplier', getTopSupplierDuplicate)
         intentMap.set('TopSupplierPO', getTopPOSupplier)
