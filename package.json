@@ -29,6 +29,8 @@
     "json-query": "^2.2.2",
     "mongoose": "^5.9.22",
     "powerbi-client": "^2.11.0",
+    "random": "^2.2.0",
+    "random-number": "0.0.9",
     "readable-stream": "^3.6.0"
   },
   "devDependencies": {

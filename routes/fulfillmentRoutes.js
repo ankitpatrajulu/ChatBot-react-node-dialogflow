@@ -7,6 +7,7 @@ const axios = require('axios')
 const alaql = require('alasql')
 const date = require('date-and-time')
 const jsonQuery = require('json-query')
+const random = require('random-number')
 
 const {
   Readable,
@@ -599,6 +600,30 @@ module.exports = app => {
     }
       
       
+        function WelcomeIntent(agent) {
+          getSpreadsheetData()
+          getPOSpreadsheetData()
+          getNONPOSpreadsheetData()
+          getMetricsSpreadsheetData()
+          getWeekEndDupSpreadsheetData()
+          var options = ({
+            min: 0,
+            max: 3,
+            integer: true
+          })
+          var rn = random(options)
+          switch(rn) {
+            case 0 : agent.add('Hello! I am Invoice Bot.')
+            break;
+            case 1 : agent.add('Good day! I am Invoice Bot.')
+            break;
+            case 2 : agent.add('Greetings! I am Invoice Bot.')
+            break;
+            case 3 : agent.add('Welcome to Invoice Bot!')
+            break;
+          }
+          agent.add(' What can I do for you today?')
+        }
 
         function fallback(agent) {
             agent.add('I didn\'t understand!')
@@ -607,6 +632,7 @@ module.exports = app => {
 
         let intentMap = new Map()
         //intentMap.set('LoadData', loadData)
+        intentMap.set('WelcomeIntent', WelcomeIntent)
         intentMap.set('ErrorCountIntent', countInvoices)
         intentMap.set('Default Fallback Intent', fallback)
         intentMap.set('customPayloadFunction', customPayloadFunction)
