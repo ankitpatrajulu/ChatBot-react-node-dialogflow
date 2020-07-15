@@ -45,7 +45,7 @@ const Card2 = (props) => (
                     }
                     </div>
                     <div className="card-action">
-                        <a target="_blank" rel="noopener noreferrer" href="/">{props.payload.fields.text.stringValue}</a>
+                        <a target="_blank" rel="noopener noreferrer" href={props.payload.fields.subtitle.stringValue}>{props.payload.fields.text.stringValue}</a>
                     </div>
                 </div>
             </div>

@@ -462,10 +462,10 @@ module.exports = app => {
                   {
                     "type": `${array[1][0]}`,
                     "title": `Duplicate Invoices- ${array[1][1]}`,
-                    "subtitle": `Duplicate Invoices- ${array[1][1]}`,
+                    "subtitle": "https://kaiser-deloitte-powerbi.herokuapp.com/",
                     "image": {
                       "src": {
-                        "rawUrl": "https://example.com/images/logo.png"
+                        "rawUrl": "https://kaiser-deloitte-powerbi.herokuapp.com/"
                       }
                     },
                     "text": `${array[1][2]} $`
@@ -473,10 +473,10 @@ module.exports = app => {
                   {
                     "type": `${array[2][0]}`,
                     "title": `Duplicate Invoices- ${array[2][1]}`,
-                    "subtitle": `Duplicate Invoices- ${array[2][1]}`,
+                    "subtitle": "https://kaiser-deloitte-powerbi.herokuapp.com/",
                     "image": {
                       "src": {
-                        "rawUrl": "https://example.com/images/logo.png"
+                        "rawUrl": "https://kaiser-deloitte-powerbi.herokuapp.com/"
                       }
                     },
                     "text": `${array[2][2]} $`
@@ -485,10 +485,10 @@ module.exports = app => {
                   {
                     "type": `${array[3][0]}`,
                     "title": `Duplicate Invoices- ${array[3][1]}`,
-                    "subtitle": `Duplicate Invoices- ${array[3][1]}`,
+                    "subtitle": "https://kaiser-deloitte-powerbi.herokuapp.com/",
                     "image": {
                       "src": {
-                        "rawUrl": "https://example.com/images/logo.png"
+                        "rawUrl": "https://kaiser-deloitte-powerbi.herokuapp.com/"
                       }
                     },
                     "text": `${array[3][2]} $`
@@ -496,10 +496,10 @@ module.exports = app => {
                   {
                     "type": `${array[4][0]}`,
                     "title": `Duplicate Invoices- ${array[4][1]}`,
-                    "subtitle": `Duplicate Invoices- ${array[4][1]}`,
+                    "subtitle": "https://kaiser-deloitte-powerbi.herokuapp.com/",
                     "image": {
                       "src": {
-                        "rawUrl": "https://example.com/images/logo.png"
+                        "rawUrl": "https://kaiser-deloitte-powerbi.herokuapp.com/"
                       }
                     },
                     "text": `${array[4][2]} $`
@@ -507,10 +507,10 @@ module.exports = app => {
                   {
                     "type": `${array[5][0]}`,
                     "title": `Duplicate Invoices- ${array[5][1]}`,
-                    "subtitle": `Duplicate Invoices- ${array[5][1]}`,
+                    "subtitle":"https://kaiser-deloitte-powerbi.herokuapp.com/",
                     "image": {
                       "src": {
-                        "rawUrl": "https://example.com/images/logo.png"
+                        "rawUrl": "https://kaiser-deloitte-powerbi.herokuapp.com/"
                       }
                     },
                     "text": `${array[5][2]} $`
