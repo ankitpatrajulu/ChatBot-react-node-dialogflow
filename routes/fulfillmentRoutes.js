@@ -654,6 +654,56 @@ module.exports = app => {
           
         }
 
+        function vendorInvoiceDetails(agent){
+          const user = userType()
+          console.log(user)
+          switch(user) {
+            case 'admin': 
+              agent.add('You do not have access to this scope.')
+              break;
+            
+            case 'none':
+              agent.add('Login/Register to get access to the data!')
+              break;
+            
+            case 'vendor':
+            const {invoiceNumber, supplierNumber} = agent.parameters
+            return getPOSpreadsheetData().then((res) => {
+              var condition = `*SupplierNumber=${supplierNumber} & InvoiceNumber=${invoiceNumber}`
+              var resultNONPO = undefined
+              var resultError = undefined
+              var resultPO = jsonQuery(`data[${condition}].Processed Date`, {
+                  data: res
+              }).value
+              if(resultPO.length === 0) {
+                getNONPOSpreadsheetData().then((res) => {
+                  resultNONPO = jsonQuery(`data[${condition}].Processed Date`, {
+                    data: res
+                   }).value
+                   if(resultNONPO.length === 0){
+                       getSpreadsheetData().then((res) => {
+                       resultError = jsonQuery(`data[${condition}].Error_Comments`, {
+                       data: res
+                       }).value
+                      if(resultError.length === 0) {
+                          agent.add('Invoice Not Found!')
+                      } else {
+                         agent.add(`Invoice ${invoiceNumber} was processed as Error with Error Comments:- ${resultError}`)
+                       }
+                   })
+                 }else {
+                        agent.add(`Non PO Invoice ${invoiceNumber} was processed on ${resultNONPO}`)
+                  }
+            })
+           } else {
+                agent.add(`Po Invoice ${invoiceNumber} was processed on ${resultPO}`)
+            }
+          }).catch((e) => {
+              console.log(e)
+          })
+          }
+        }
+
         function fallback(agent) {
             agent.add('I didn\'t understand!')
             agent.add('I\'m sorry, can you try again?')
@@ -674,6 +724,7 @@ module.exports = app => {
         intentMap.set('TotalCountIntent', getAllInvoicesCount)
         intentMap.set('userLogin', getUserType)
         intentMap.set('userLogout', resetUserType)
+        intentMap.set('vendorInvoiceDetails', vendorInvoiceDetails)
         
         agent.handleRequest(intentMap)
 
