@@ -1,13 +1,14 @@
 const dfff = require('dialogflow-fulfillment')
 const {WebhookClient} = require('dialogflow-fulfillment')
-const {findUser} = require('../dbquery/QueryHandler')
 const structjson = require('../chatbot/structjson')
 const chatbot = require('../chatbot/chatbot')
 const axios = require('axios')
-const alaql = require('alasql')
 const date = require('date-and-time')
 const jsonQuery = require('json-query')
 const random = require('random-number')
+const mongoose = require('mongoose');
+
+const Login = mongoose.model('registration')
 
 const {
   Readable,
@@ -23,6 +24,7 @@ let jsonFetchPO = undefined
 let jsonFetchNONPO = undefined
 let jsonFetchMetrics = undefined
 let jsonFetchWeekEndDup = undefined
+let userTypeDefine = undefined
 
 module.exports = app => {
     app.post('/', async (req, res) => {
@@ -30,12 +32,6 @@ module.exports = app => {
             request: req, 
             response: res
         })
-
-        function CountIntent(agent) {
-           
-            agent.add('Welcome to the CountIntent fulfillment. ')
-
-        }
 
         function countIntentYes(agent) {     
           agent.add('This is where the link would populate!')
@@ -114,75 +110,12 @@ module.exports = app => {
     }
 
     function formattedDate2(givenDate) {
-      //console.log(givenDate)
       const pattern = date.compile('YYYY-MM-DD...')
       const newdate = date.parse(givenDate, pattern)
-      //console.log(newdate)
       let formattedDate = ''
       formattedDate = date.format(newdate, 'DD/MM/YYYY')
-      //console.log(formattedDate)
       return formattedDate
     }
-
-    async function obtainCondition(agent) {
-      const parameters = agent.parameters
-      let condition = ''
-      let datenew
-      if(parameters.date) {
-        datenew = formattedDate(parameters.date)
-        console.log(datenew)
-      }
-      switch(parameters.name){
-        case 'PO':
-          condition= `PO_Invoice=TRUE & Invoice_Date=${datenew}`
-          querySpreadsheet(condition).then((count) => {
-            console.log('In obtainCondition ', count)
-            return count
-          })
-          break;
-      }
-    }
-
-        function customPayloadFunction(agent) {
-                const count = "7890"
-                var payloadData = {
-                    "richContent": [
-                          {
-                            "type": "Invoice Count",
-                            "title": "The sum total of all invoices",
-                            "subtitle": "--AMS Team",
-                            "image": {
-                              "src": {
-                                "rawUrl": "https://example.com/images/logo.png"
-                              }
-                            },
-                            "text": count
-                          }
-                      ]
-                }
-    
-                agent.add( new dfff.Payload(agent.UNSPECIFIED, payloadData, {sendAsMessage: true, rawPayload: true}))
-        }
-
-        function customDashboard() {
-          var payloadData = {
-            "richContent": [
-                  {
-                    "type": `${parameters.InvoiceType} Invoice Count`,
-                    "title": "The sum total of all invoices",
-                    "subtitle": `${parameters.InvoiceDate}`,
-                    "image": {
-                      "src": {
-                        "rawUrl": "https://example.com/images/logo.png"
-                      }
-                    },
-                    "text": `${count}`
-                  }
-              ]
-        }
-
-        agent.add( new dfff.Payload(agent.UNSPECIFIED, payloadData, {sendAsMessage: true, rawPayload: true}))
-        }
 
         function customPayload(parameters, count) {
           var payloadData = {
@@ -206,15 +139,24 @@ module.exports = app => {
 
 
         function errorCountInvoices(agent) {
+          const user = userType()
+          console.log(user)
+          switch(user) {
+          case 'vendor': 
+            agent.add('You do not have access to this scope.')
+            break;
+          
+          case 'none':
+            agent.add('Login/Register to get access to the data!')
+            break;
+          
+          case 'admin':
           const parameters = agent.parameters
           return getSpreadsheetData().then((res) => {
-            //const res = jsonFetch
-            //console.log(jsonFetch)
             let condition = ''
             let datenew = '*'
             if(parameters.date) {
               datenew = formattedDate(parameters.date, parameters.InvoiceType)
-              //console.log(datenew)
             }
             if(parameters.InvoiceType[0] === 'Exception'){
               if(parameters.InvoiceType[1]){
@@ -239,18 +181,7 @@ module.exports = app => {
                 case 'PO':
                   console.log(datenew)
                   condition = `PO_Invoice=TRUE & InvoiceDate=${datenew}`
-                  // PO_Invoice=TRUE & 
-                  // let count = querySpreadsheet(res, condition)
-                  // var result = jsonQuery(`data[*${condition}].InvoiceNumber`, {
-                  //   data: res
-                  // }).value
-                  // console.log(result)
-                  //   let count = 0
-                  //   result.map(invoice => {
-                  //       count++
-                  //   })
-                    // agent.add(`The count is ${count}.`)
-                  //console.log(result)
+                  
               break;
   
               case 'Non PO':
@@ -266,29 +197,25 @@ module.exports = app => {
                 break;
               }
             }
-            //console.log(parameters.InvoiceType)
             
             let count = querySpreadsheet(res, condition)
 
             customPayload(parameters, count)
-
-            //agent.add(`The count is ${count}.`)
           }).catch((e) => {
             console.log(e)
             agent.add('I had some error on my end')
           })
+        }
         }
 
         function querySpreadsheet(res, condition){
           var result = jsonQuery(`data[*${condition}].InvoiceNumber`, {
               data: res
           }).value
-          //console.log(result)
           let count = 0
           result.map(invoice => {
               count++
           })
-          //console.log('In querySpreadsheet ', count)
           return count
           }
 
@@ -302,127 +229,129 @@ module.exports = app => {
         }
 
         function getTopSupplierDuplicate(agent){
+          const user = userType()
+          console.log(user)
+          switch(user) {
+          case 'vendor': 
+            agent.add('You do not have access to this scope.')
+            break;
+          
+          case 'none':
+            agent.add('Login/Register to get access to the data!')
+            break;
+          
+          case 'admin':
           const parameters = agent.parameters
           return getSpreadsheetData().then((res) => {
               const condition = "*ErrDup=TRUE"
               const condition2 = formattedDate('2020-03-31T06:30:00.000+00:00')
-              //  & InvoiceDate=${condition2}
               var resultSN = jsonQuery(`data[${condition}].Supplier_Name`, {
                   data: res
               }).value
               var resultIT = jsonQuery(`data[${condition}].InvoiceTotal`, {
                   data: res
               }).value
-              //console.log(result)
               var arr = []
               const distinct = [...new Set(resultSN)]
               distinct.map(invoice => {
                   var rep = getOccurrence(resultSN, resultIT, invoice)
                   arr.push([invoice, rep.count, rep.total.toFixed(3)])
               })
-              //console.log(arr[0][1])
               if(parameters.maxDupCount === 'amount') {
                 arr.sort(compareThirdColumn)
               } else{
                 arr.sort(compareSecondColumn)
               }
               customPayloadSupplier(arr)
-              
-              //console.log(distinct)
-              // let count = 0
-              // distinct.map(invoice => {
-              //     count++
-              // })
-              // console.log('For Distinct Vendors',count)
-              // return count
           }).catch((e) => {
               console.log(e)
           })
+        }
       }
 
-      // function TopSupplierPO_NONPO(agent) {
-      //   if(agent.parameters.InvoiceType === 'PO') {
-      //     return getTopPOSupplier()
-      //   }else {
-      //     return getTopNONPOSupplier()
-      //   }
-      // }
-
       function getTopPOSupplier(agent) {
-        return getPOSpreadsheetData().then((res) => {
-            //const condition = "*ErrDup=TRUE"
-            //const condition2 = formattedDate('2020-03-31T06:30:00.000+00:00')
-            //  & InvoiceDate=${condition2}
-            var resultSN = jsonQuery(`data.SupplierNumber`, {
-                data: res
-            }).value
-            var resultIT = jsonQuery(`data.InvoiceTotal`, {
-                data: res
-            }).value
-            //console.log(result)
-            var arr = []
-            const distinct = [...new Set(resultSN)]
-            distinct.map(invoice => {
-                var rep = getOccurrence(resultSN, resultIT, invoice)
-                arr.push([invoice, rep.count, rep.total.toFixed(1)])
-            })
-            //console.log(arr[0][1])
-            arr.sort(compareThirdColumn)
-            arr.shift()
-            // for(i = 1; i < 6; i++){
-            //     console.log(arr[i])
-            // }
-            
-            //console.log(distinct)
-            let count = 0
-            distinct.map(invoice => {
-                count++
-            })
-
-            topFiveSupplierPO_NONPO_Payload(arr, count, 'PO')
-            // console.log('For Distinct Vendors',count)
-            // return count
-        }).catch((e) => {
-            console.log(e)
-        })
+        const user = userType()
+        console.log(user)
+        switch(user) {
+          case 'vendor': 
+            agent.add('You do not have access to this scope.')
+            break;
+          
+          case 'none':
+            agent.add('Login/Register to get access to the data!')
+            break;
+          
+          case 'admin':
+            return getPOSpreadsheetData().then((res) => {
+              var resultSN = jsonQuery(`data.SupplierNumber`, {
+                  data: res
+              }).value
+              var resultIT = jsonQuery(`data.InvoiceTotal`, {
+                  data: res
+              }).value
+              var arr = []
+              const distinct = [...new Set(resultSN)]
+              distinct.map(invoice => {
+                  var rep = getOccurrence(resultSN, resultIT, invoice)
+                  arr.push([invoice, rep.count, rep.total.toFixed(1)])
+              })
+              arr.sort(compareThirdColumn)
+              arr.shift()
+              let count = 0
+              distinct.map(invoice => {
+                  count++
+              })
+  
+              topFiveSupplierPO_NONPO_Payload(arr, count, 'PO')
+          }).catch((e) => {
+              console.log(e)
+          })
+          break;
+        }
+        
     }
     
     function getTopNONPOSupplier(agent) {
+      const user = userType()
+        console.log(user)
+        switch(user) {
+          case 'vendor': 
+            agent.add('You do not have access to this scope.')
+            break;
+          
+          case 'none':
+            agent.add('Login/Register to get access to the data!')
+            break;
+          
+          case 'admin':
         return getNONPOSpreadsheetData().then((res) => {
-            //const condition = "*ErrDup=TRUE"
-            //const condition2 = formattedDate('2020-03-31T06:30:00.000+00:00')
-            //  & InvoiceDate=${condition2}
             var resultSN = jsonQuery(`data.SupplierNumber`, {
                 data: res
             }).value
             var resultIT = jsonQuery(`data.InvoiceTotal`, {
                 data: res
             }).value
-            //console.log(result)
+
             var arr = []
             const distinct = [...new Set(resultSN)]
             distinct.map(invoice => {
                 var rep = getOccurrence(resultSN, resultIT, invoice)
                 arr.push([invoice, rep.count, rep.total.toFixed(1)])
             })
-            //console.log(arr[0][1])
+
             arr.sort(compareThirdColumn)
-            // for(i = 0; i < 5; i++){
-            //     console.log(arr[i])
-            // }
-            
-            //console.log(distinct)
+
             let count = 0
             distinct.map(invoice => {
                 count++
             })
 
             topFiveSupplierPO_NONPO_Payload(arr, count, 'NON PO')
-            //console.log('For Distinct Vendors',count)
-            //return count
+
         }).catch((e) => {
             console.log(e)
         })
+      }
     }
 
     function topFiveSupplierPO_NONPO_Payload(array, count, type) {
@@ -557,27 +486,50 @@ module.exports = app => {
       }
 
       function getProcessedInvoicesCount(agent) {
+        const user = userType()
+        console.log(user)
+        switch(user) {
+          case 'vendor': 
+            agent.add('You do not have access to this scope.')
+            break;
+          
+          case 'none':
+            agent.add('Login/Register to get access to the data!')
+            break;
+          
+          case 'admin':
         const date = agent.parameters.date[0]
         return getMetricsSpreadsheetData().then((res) => {
             const condition = formattedDate2(date)
             var resultSN = jsonQuery(`data[ProcessingDate=${condition}].InvoicesSuccesssfulProcessed`, {
                 data: res
             }).value
-            //console.log(resultSN)
             agent.add(`Total Processed Invoices on ${condition} are ${resultSN}`)
         }).catch((e) => {
             console.log(e)
         })
+      }
     }
 
     function getAllInvoicesCount(agent) {
+      const user = userType()
+        console.log(user)
+        switch(user) {
+          case 'vendor': 
+            agent.add('You do not have access to this scope.')
+            break;
+          
+          case 'none':
+            agent.add('Login/Register to get access to the data!')
+            break;
+          
+          case 'admin':
       const date = agent.parameters.date
       return getMetricsSpreadsheetData().then((res) => {
           const condition = formattedDate2(date)
           var totalInvoicesReceived = jsonQuery(`data[ProcessingDate=${condition}].InvoiceCount`, {
               data: res
           }).value
-          //console.log(totalInvoicesReceived)
           var successfulProcessed = jsonQuery(`data[ProcessingDate=${condition}].InvoicesSuccesssfulProcessed`, {
               data: res
           }).value
@@ -602,11 +554,10 @@ module.exports = app => {
             deloitteRejected
           })
             
-          //console.log(resultSN)
-          //return resultSN
       }).catch((e) => {
           console.log(e)
       })
+    }
     }
 
     function totalInvoiceCountPayload(invoice) {
@@ -632,7 +583,7 @@ module.exports = app => {
       
       
         function WelcomeIntent(agent) {
-          //let agent2 = agent
+
           getSpreadsheetData()
           getPOSpreadsheetData()
           getNONPOSpreadsheetData()
@@ -654,11 +605,53 @@ module.exports = app => {
             case 3 : agent.add('Welcome to Invoice Bot!')
             break;
           }
-          // let that = this
-          // setTimeout(() => {
-          //   that.agent2.add(' What can I do for you today?')
-          // },1000)
+
           agent.add(' What can I do for you today?')
+        }
+
+        function userType(){
+          if(userTypeDefine === undefined){
+            return 'none'
+          } else if(userTypeDefine === 'vendor'){
+            return 'vendor'
+          } else if (userTypeDefine === 'admin'){
+            return 'admin'
+          }
+        }
+
+        function resetUserType(){
+          userTypeDefine = undefined
+          agent.add('You have been logged out!')
+        }
+
+        function getUserType(agent) {
+
+          return Login.find({
+            email: agent.parameters.email,
+            password: agent.parameters.password
+          }).then((user) => {
+            console.log(user[0].userType)
+            if(user.length > 0) {
+              switch(user[0].userType) {
+                case 'yes': 
+                  userTypeDefine = 'vendor'
+                  break;
+                
+                case 'admin':
+                  userTypeDefine = 'admin'
+                  break;
+
+                default: userTypeDefine = 'none'
+              }
+              agent.add('Your Login was successful. Access the functions within your scope!')
+            } else {
+              agent.add('Login Unsuccessful. Incorrect Email or Password')
+            }
+           
+          }).catch((e) => {
+
+          })
+          
         }
 
         function fallback(agent) {
@@ -679,6 +672,8 @@ module.exports = app => {
         intentMap.set('TopSupplierNONPO', getTopNONPOSupplier)
         intentMap.set('ProcessedInvoicesIntent', getProcessedInvoicesCount)
         intentMap.set('TotalCountIntent', getAllInvoicesCount)
+        intentMap.set('userLogin', getUserType)
+        intentMap.set('userLogout', resetUserType)
         
         agent.handleRequest(intentMap)
 

@@ -83,14 +83,19 @@ module.exports = {
         let queryResult = responses[0].queryResult
 
         switch (queryResult.action) {
-            case 'recommendactions-yes' :
+            // case 'recommendactions-yes' :
+            //     if(queryResult.allRequiredParamsPresent) {
+            //         self.saveRegistration(queryResult.parameters.fields)
+            //     }
+            // break;
+            // case 'CountIntent' :
+            //     if(queryResult.allRequiredParamsPresent) {
+            //         self.saveFindData(queryResult.parameters.fields)
+            //     }
+            // break;
+            case 'registeruseraction' :
                 if(queryResult.allRequiredParamsPresent) {
                     self.saveRegistration(queryResult.parameters.fields)
-                }
-            break;
-            case 'CountIntent' :
-                if(queryResult.allRequiredParamsPresent) {
-                    self.saveFindData(queryResult.parameters.fields)
                 }
             break;
         }
@@ -105,11 +110,12 @@ module.exports = {
     },
 
     saveRegistration: async function(fields) {
+        console.log(fields.name.structValue.fields.name)
         const registration = new Registration({
-            name: fields.name.stringValue,
-            address: fields.address.stringValue,
-            phone: fields.phone.stringValue,
+            name: fields.name.structValue.fields.name.stringValue,
             email: fields.email.stringValue,
+            password: fields.password.stringValue,
+            userType: fields.usertype.stringValue,
             registerDate: Date.now()
         })
 

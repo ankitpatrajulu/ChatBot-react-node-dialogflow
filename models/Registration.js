@@ -2,10 +2,26 @@ const mongoose = require('mongoose')
 const { Schema } = mongoose
 
 const registrationSchema = new Schema({
-    name: String,
-    address: String,
-    phone: String,
-    email: String,
+    name: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    password: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    email: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    userType: {
+        type: String,
+        required: true,
+        trim: true
+    },
     registerDate: Date
 })
 
