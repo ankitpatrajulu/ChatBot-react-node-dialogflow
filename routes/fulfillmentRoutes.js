@@ -139,18 +139,18 @@ module.exports = app => {
 
 
         function errorCountInvoices(agent) {
-          const user = userType()
-          console.log(user)
-          switch(user) {
-          case 'vendor': 
-            agent.add('You do not have access to this scope.')
-            break;
+          // const user = userType()
+          // console.log(user)
+          // switch(user) {
+          // case 'vendor': 
+          //   agent.add('You do not have access to this scope.')
+          //   break;
           
-          case 'none':
-            agent.add('Login/Register to get access to the data!')
-            break;
+          // case 'none':
+          //   agent.add('Login/Register to get access to the data!')
+          //   break;
           
-          case 'admin':
+          // case 'admin':
           const parameters = agent.parameters
           return getSpreadsheetData().then((res) => {
             let condition = ''
@@ -205,7 +205,7 @@ module.exports = app => {
             console.log(e)
             agent.add('I had some error on my end')
           })
-        }
+        
         }
 
         function querySpreadsheet(res, condition){
@@ -229,18 +229,18 @@ module.exports = app => {
         }
 
         function getTopSupplierDuplicate(agent){
-          const user = userType()
-          console.log(user)
-          switch(user) {
-          case 'vendor': 
-            agent.add('You do not have access to this scope.')
-            break;
+          // const user = userType()
+          // console.log(user)
+          // switch(user) {
+          // case 'vendor': 
+          //   agent.add('You do not have access to this scope.')
+          //   break;
           
-          case 'none':
-            agent.add('Login/Register to get access to the data!')
-            break;
+          // case 'none':
+          //   agent.add('Login/Register to get access to the data!')
+          //   break;
           
-          case 'admin':
+          // case 'admin':
           const parameters = agent.parameters
           return getSpreadsheetData().then((res) => {
               const condition = "*ErrDup=TRUE"
@@ -266,22 +266,22 @@ module.exports = app => {
           }).catch((e) => {
               console.log(e)
           })
-        }
+        
       }
 
       function getTopPOSupplier(agent) {
-        const user = userType()
-        console.log(user)
-        switch(user) {
-          case 'vendor': 
-            agent.add('You do not have access to this scope.')
-            break;
+        // const user = userType()
+        // console.log(user)
+        // switch(user) {
+        //   case 'vendor': 
+        //     agent.add('You do not have access to this scope.')
+        //     break;
           
-          case 'none':
-            agent.add('Login/Register to get access to the data!')
-            break;
+        //   case 'none':
+        //     agent.add('Login/Register to get access to the data!')
+        //     break;
           
-          case 'admin':
+        //   case 'admin':
             return getPOSpreadsheetData().then((res) => {
               var resultSN = jsonQuery(`data.SupplierNumber`, {
                   data: res
@@ -307,23 +307,23 @@ module.exports = app => {
               console.log(e)
           })
           break;
-        }
+        
         
     }
     
     function getTopNONPOSupplier(agent) {
-      const user = userType()
-        console.log(user)
-        switch(user) {
-          case 'vendor': 
-            agent.add('You do not have access to this scope.')
-            break;
+      // const user = userType()
+      //   console.log(user)
+      //   switch(user) {
+      //     case 'vendor': 
+      //       agent.add('You do not have access to this scope.')
+      //       break;
           
-          case 'none':
-            agent.add('Login/Register to get access to the data!')
-            break;
+      //     case 'none':
+      //       agent.add('Login/Register to get access to the data!')
+      //       break;
           
-          case 'admin':
+      //     case 'admin':
         return getNONPOSpreadsheetData().then((res) => {
             var resultSN = jsonQuery(`data.SupplierNumber`, {
                 data: res
@@ -351,7 +351,7 @@ module.exports = app => {
         }).catch((e) => {
             console.log(e)
         })
-      }
+      
     }
 
     function topFiveSupplierPO_NONPO_Payload(array, count, type) {
@@ -486,18 +486,18 @@ module.exports = app => {
       }
 
       function getProcessedInvoicesCount(agent) {
-        const user = userType()
-        console.log(user)
-        switch(user) {
-          case 'vendor': 
-            agent.add('You do not have access to this scope.')
-            break;
+        // const user = userType()
+        // console.log(user)
+        // switch(user) {
+        //   case 'vendor': 
+        //     agent.add('You do not have access to this scope.')
+        //     break;
           
-          case 'none':
-            agent.add('Login/Register to get access to the data!')
-            break;
+        //   case 'none':
+        //     agent.add('Login/Register to get access to the data!')
+        //     break;
           
-          case 'admin':
+        //   case 'admin':
         const date = agent.parameters.date[0]
         return getMetricsSpreadsheetData().then((res) => {
             const condition = formattedDate2(date)
@@ -508,22 +508,22 @@ module.exports = app => {
         }).catch((e) => {
             console.log(e)
         })
-      }
+      
     }
 
     function getAllInvoicesCount(agent) {
-      const user = userType()
-        console.log(user)
-        switch(user) {
-          case 'vendor': 
-            agent.add('You do not have access to this scope.')
-            break;
+      // const user = userType()
+      //   console.log(user)
+      //   switch(user) {
+      //     case 'vendor': 
+      //       agent.add('You do not have access to this scope.')
+      //       break;
           
-          case 'none':
-            agent.add('Login/Register to get access to the data!')
-            break;
+      //     case 'none':
+      //       agent.add('Login/Register to get access to the data!')
+      //       break;
           
-          case 'admin':
+      //     case 'admin':
       const date = agent.parameters.date
       return getMetricsSpreadsheetData().then((res) => {
           const condition = formattedDate2(date)
@@ -557,7 +557,7 @@ module.exports = app => {
       }).catch((e) => {
           console.log(e)
       })
-    }
+    
     }
 
     function totalInvoiceCountPayload(invoice) {
@@ -655,18 +655,18 @@ module.exports = app => {
         }
 
         function vendorInvoiceDetails(agent){
-          const user = userType()
-          console.log(user)
-          switch(user) {
-            case 'admin': 
-              agent.add('You do not have access to this scope.')
-              break;
+          // const user = userType()
+          // console.log(user)
+          // switch(user) {
+          //   case 'admin': 
+          //     agent.add('You do not have access to this scope.')
+          //     break;
             
-            case 'none':
-              agent.add('Login/Register to get access to the data!')
-              break;
+          //   case 'none':
+          //     agent.add('Login/Register to get access to the data!')
+          //     break;
             
-            case 'vendor':
+          //   case 'vendor':
             const {invoiceNumber, supplierNumber} = agent.parameters
             return getPOSpreadsheetData().then((res) => {
               var condition = `*SupplierNumber=${supplierNumber} & InvoiceNumber=${invoiceNumber}`
@@ -701,7 +701,7 @@ module.exports = app => {
           }).catch((e) => {
               console.log(e)
           })
-          }
+          
         }
 
         function fallback(agent) {
