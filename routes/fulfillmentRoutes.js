@@ -305,9 +305,7 @@ module.exports = app => {
               topFiveSupplierPO_NONPO_Payload(arr, count, 'PO')
           }).catch((e) => {
               console.log(e)
-          })
-          break;
-        
+          })        
         
     }
     
